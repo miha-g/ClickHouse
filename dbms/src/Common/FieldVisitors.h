@@ -49,6 +49,7 @@ typename std::decay_t<Visitor>::ResultType applyVisitor(Visitor && visitor, F &&
         case Field::Types::Decimal32: return visitor(field.template get<DecimalField<Decimal32>>());
         case Field::Types::Decimal64: return visitor(field.template get<DecimalField<Decimal64>>());
         case Field::Types::Decimal128: return visitor(field.template get<DecimalField<Decimal128>>());
+        case Field::Types::AggregateFunctionState: return visitor(field.template get<AggregateFunctionStateData>());
 
         default:
             throw Exception("Bad type of Field", ErrorCodes::BAD_TYPE_OF_FIELD);
@@ -72,6 +73,7 @@ static typename std::decay_t<Visitor>::ResultType applyBinaryVisitorImpl(Visitor
         case Field::Types::Decimal32:  return visitor(field1, field2.template get<DecimalField<Decimal32>>());
         case Field::Types::Decimal64:  return visitor(field1, field2.template get<DecimalField<Decimal64>>());
         case Field::Types::Decimal128: return visitor(field1, field2.template get<DecimalField<Decimal128>>());
+        case Field::Types::AggregateFunctionState: return visitor(field1, field2.template get<AggregateFunctionStateData>());
 
         default:
             throw Exception("Bad type of Field", ErrorCodes::BAD_TYPE_OF_FIELD);
@@ -116,6 +118,9 @@ typename std::decay_t<Visitor>::ResultType applyVisitor(Visitor && visitor, F1 &
         case Field::Types::Decimal128:
             return applyBinaryVisitorImpl(
                 std::forward<Visitor>(visitor), field1.template get<DecimalField<Decimal128>>(), std::forward<F2>(field2));
+        case Field::Types::AggregateFunctionState:
+            return applyBinaryVisitorImpl(
+                    std::forward<Visitor>(visitor), field1.template get<AggregateFunctionStateData>(), std::forward<F2>(field2));
 
         default:
             throw Exception("Bad type of Field", ErrorCodes::BAD_TYPE_OF_FIELD);
